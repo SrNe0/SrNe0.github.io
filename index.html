@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diego Medina · Desarrollador Backend</title>
+<meta name="description" content="Portafolio de Diego Medina, desarrollador backend e ingeniero de sistemas (UIS). APIs REST con FastAPI, Nest.js y Spring Boot.">
+<meta property="og:title" content="Diego Medina · Desarrollador Backend">
+<meta property="og:description" content="APIs REST, bases de datos y buenas prácticas. Ingeniería de Sistemas, UIS.">
+<meta name="theme-color" content="#0a0e14">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230a0e14'/><text x='32' y='43' font-family='monospace' font-size='30' font-weight='700' text-anchor='middle' fill='%233ddc97'>DM</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e14; --bg2:#0f1520; --card:#121a27; --line:#1f2a3b;
+  --text:#e6edf6; --muted:#8a97ab; --accent:#3ddc97; --accent2:#8b7bff; --warn:#ffb86b;
+  --radius:16px;
+}
+:root[data-theme="light"]{
+  --bg:#f6f8fb; --bg2:#eef2f7; --card:#ffffff; --line:#dde4ee;
+  --text:#0f1722; --muted:#5b6778; --accent:#0b9d68; --accent2:#5b4bdb; --warn:#b36200;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+
+/* fondo */
+.bg{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+   radial-gradient(600px circle at var(--mx,70%) var(--my,10%), color-mix(in srgb,var(--accent) 12%,transparent), transparent 60%),
+   radial-gradient(800px circle at 0% 100%, color-mix(in srgb,var(--accent2) 14%,transparent), transparent 60%),
+   var(--bg);}
+.bg::after{content:"";position:absolute;inset:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;opacity:.35;
+  -webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse at 50% 0%,#000 20%,transparent 75%)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 70%,transparent);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:"JetBrains Mono",monospace;font-weight:700;letter-spacing:-.02em}
+.logo b{color:var(--accent)}
+.links{display:flex;gap:6px;align-items:center}
+.links a{padding:8px 12px;border-radius:10px;font-size:14px;color:var(--muted);transition:.2s}
+.links a:hover,.links a.active{color:var(--text);background:var(--card)}
+.icon-btn{border:1px solid var(--line);background:var(--card);color:var(--text);width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:16px}
+.icon-btn:hover{border-color:var(--accent)}
+@media(max-width:760px){.links a:not(.keep){display:none}}
+
+/* hero */
+.hero{padding:88px 0 64px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:56px}}
+.badge{display:inline-flex;gap:10px;align-items:center;padding:6px 14px;border:1px solid var(--line);background:var(--card);border-radius:999px;font-size:13px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 0 var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px transparent}100%{box-shadow:0 0 0 0 transparent}}
+h1{font-size:clamp(40px,6vw,68px);line-height:1.04;letter-spacing:-.035em;margin:22px 0 18px;font-weight:800}
+h1 .grad{background:linear-gradient(100deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:18px;color:var(--muted);max-width:540px}
+.role{font-family:"JetBrains Mono",monospace;color:var(--accent);font-size:15px;margin-top:20px;min-height:24px}
+.caret{display:inline-block;width:8px;height:1.1em;background:var(--accent);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;font-weight:600;font-size:15px;border:1px solid var(--line);background:var(--card);transition:.2s;cursor:pointer}
+.btn:hover{transform:translateY(-2px);border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#04120b;border-color:var(--accent)}
+.btn.primary:hover{box-shadow:0 10px 30px -10px var(--accent)}
+
+/* terminal */
+.term{border:1px solid var(--line);background:linear-gradient(180deg,var(--card),var(--bg2));border-radius:var(--radius);box-shadow:0 30px 80px -30px #000a;overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.term-bar i{width:11px;height:11px;border-radius:50%;display:block}
+.term-bar i:nth-child(1){background:#ff5f57}.term-bar i:nth-child(2){background:#febc2e}.term-bar i:nth-child(3){background:#28c840}
+.term-bar span{margin-left:10px;font-size:12px;color:var(--muted)}
+.term pre{padding:20px;font-size:13.5px;line-height:1.75;min-height:318px;white-space:pre-wrap;word-break:break-word}
+.k{color:var(--accent2)}.s{color:var(--accent)}.n{color:var(--warn)}.c{color:var(--muted)}
+.status{display:inline-block;padding:1px 8px;border-radius:6px;background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
+
+/* secciones */
+section{padding:84px 0}
+.eyebrow{font-family:"JetBrains Mono",monospace;color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;margin:8px 0 14px;line-height:1.15}
+.lead{color:var(--muted);max-width:640px}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.dot,.caret{animation:none}html{scroll-behavior:auto}}
+
+/* sobre mi */
+.about{display:grid;grid-template-columns:1.3fr .7fr;gap:40px;margin-top:36px}
+@media(max-width:860px){.about{grid-template-columns:1fr}}
+.about p{color:var(--muted);margin-bottom:14px}
+.about p strong{color:var(--text);font-weight:600}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.stat{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:20px}
+.stat b{display:block;font-size:34px;letter-spacing:-.03em;color:var(--accent);font-weight:800}
+.stat span{font-size:13px;color:var(--muted)}
+
+/* stack */
+.stack{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:36px}
+.group{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:22px}
+.group h3{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:14px;font-family:"JetBrains Mono",monospace}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:13px;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:var(--bg2);transition:.2s}
+.chip:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.chip.soft{color:var(--muted)}
+
+/* experiencia */
+.timeline{margin-top:36px;position:relative;padding-left:28px}
+.timeline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--accent),var(--accent2),transparent)}
+.job{position:relative;border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:24px;margin-bottom:18px}
+.job::before{content:"";position:absolute;left:-29px;top:30px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.job-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 16px}
+.job h3{font-size:18px}
+.job .where{color:var(--accent);font-size:14px}
+.job .when{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--muted)}
+.job ul{margin:14px 0 0 18px;color:var(--muted);font-size:15px}
+.job li{margin-bottom:6px}
+.job li::marker{color:var(--accent)}
+
+/* proyectos */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:26px}
+.filters button{font:inherit;font-size:13px;padding:7px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer;transition:.2s}
+.filters button:hover{color:var(--text)}
+.filters button.on{background:var(--accent);border-color:var(--accent);color:#04120b;font-weight:600}
+.projects{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;margin-top:26px}
+.proj{position:relative;display:flex;flex-direction:column;border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:24px;overflow:hidden;transition:.25s}
+.proj::before{content:"";position:absolute;inset:0;background:radial-gradient(380px circle at var(--px,50%) var(--py,0%),color-mix(in srgb,var(--accent) 14%,transparent),transparent 60%);opacity:0;transition:.3s}
+.proj:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--accent) 60%,var(--line))}
+.proj:hover::before{opacity:1}
+.proj>*{position:relative}
+.proj-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;color:var(--muted);font-size:13px}
+.proj h3{font-size:19px;margin-bottom:8px;font-family:"JetBrains Mono",monospace;letter-spacing:-.02em}
+.proj p{color:var(--muted);font-size:14.5px;flex:1}
+.proj .chips{margin-top:18px}
+.proj .meta{display:flex;gap:14px;margin-top:16px;font-size:12.5px;color:var(--muted);font-family:"JetBrains Mono",monospace}
+.proj.hide{display:none}
+
+/* certificaciones */
+.certs{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:36px}
+.cert{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:22px}
+.cert .yr{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent)}
+.cert h3{font-size:16px;margin:8px 0 4px}
+.cert p{font-size:13.5px;color:var(--muted)}
+
+/* contacto */
+.contact{border:1px solid var(--line);border-radius:24px;padding:clamp(28px,5vw,60px);text-align:center;background:
+  radial-gradient(500px circle at 50% 0%,color-mix(in srgb,var(--accent) 16%,transparent),transparent 70%),var(--card)}
+.contact h2{margin-top:0}
+.contact .lead{margin:0 auto 28px}
+.contact .cta{justify-content:center}
+footer{padding:36px 0 50px;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div>
+
+<nav>
+  <div class="wrap">
+    <a href="#top" class="logo">&lt;<b>dm</b> /&gt;</a>
+    <div class="links">
+      <a href="#sobre-mi">Sobre mí</a>
+      <a href="#stack">Stack</a>
+      <a href="#experiencia">Experiencia</a>
+      <a href="#proyectos">Proyectos</a>
+      <a href="#contacto" class="keep">Contacto</a>
+      <button class="icon-btn" id="theme" aria-label="Cambiar tema">☾</button>
+    </div>
+  </div>
+</nav>
+
+<main id="top" class="wrap">
+  <header class="hero">
+    <div>
+      <span class="badge"><span class="dot"></span> Abierto a nuevas oportunidades</span>
+      <h1>Hola, soy <span class="grad">Diego Medina</span>.</h1>
+      <p class="sub">Desarrollador backend e ingeniero de sistemas. Diseño y mantengo <strong>APIs REST</strong> con bases de datos bien modeladas, código limpio y foco en seguridad.</p>
+      <div class="role"><span id="typed"></span><span class="caret"></span></div>
+      <div class="cta">
+        <a class="btn primary" href="#proyectos">Ver proyectos →</a>
+        <a class="btn" href="https://github.com/SrNe0" target="_blank" rel="noopener">GitHub</a>
+        <a class="btn" href="https://www.linkedin.com/in/diego-medina-srneo" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+
+    <div class="term" aria-label="Respuesta de ejemplo de una API con mis datos">
+      <div class="term-bar"><i></i><i></i><i></i><span class="mono">~/diego — zsh</span></div>
+      <pre class="mono" id="term"></pre>
+    </div>
+  </header>
+
+  <section id="sobre-mi">
+    <div class="reveal">
+      <div class="eyebrow">// sobre mí</div>
+      <h2>Código que se entiende y se mantiene.</h2>
+    </div>
+    <div class="about">
+      <div class="reveal">
+        <p>Soy estudiante de <strong>décimo semestre de Ingeniería de Sistemas</strong> en la Universidad Industrial de Santander (Bucaramanga), próximo a graduarme.</p>
+        <p>He trabajado desarrollando y manteniendo <strong>APIs REST con FastAPI, Nest.js y Spring Boot</strong>, sobre MySQL, PostgreSQL y MongoDB, con control de versiones en Git y Azure DevOps. También he construido herramientas internas de escritorio y una plataforma de liquidación y recaudo.</p>
+        <p>Complemento mi formación con <strong>ciberseguridad</strong> (MinTIC, Google) y practico a diario con proyectos propios que puedes revisar abajo.</p>
+      </div>
+      <div class="stats reveal">
+        <div class="stat"><b data-count="10" data-suffix="º">0</b><span>semestre de Ing. de Sistemas</span></div>
+        <div class="stat"><b data-count="1" data-suffix="+">0</b><span>año como desarrollador</span></div>
+        <div class="stat"><b data-count="4">0</b><span>certificaciones</span></div>
+        <div class="stat"><b data-count="6">0</b><span>repos públicos</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="reveal">
+      <div class="eyebrow">// stack</div>
+      <h2>Herramientas con las que trabajo.</h2>
+      <p class="lead">Lo que uso en producción y lo que sigo aprendiendo.</p>
+    </div>
+    <div class="stack reveal">
+      <div class="group"><h3>lenguajes</h3><div class="chips"><span class="chip">Python</span><span class="chip">TypeScript</span><span class="chip">JavaScript</span><span class="chip">Java</span><span class="chip soft">C# (básico)</span></div></div>
+      <div class="group"><h3>frameworks</h3><div class="chips"><span class="chip">FastAPI</span><span class="chip">Nest.js</span><span class="chip">Spring Boot</span><span class="chip">Tkinter</span><span class="chip soft">.NET (básico)</span></div></div>
+      <div class="group"><h3>bases de datos</h3><div class="chips"><span class="chip">PostgreSQL</span><span class="chip">MySQL</span><span class="chip">MongoDB</span></div></div>
+      <div class="group"><h3>devops &amp; herramientas</h3><div class="chips"><span class="chip">Docker</span><span class="chip">Git / GitHub</span><span class="chip">Azure DevOps</span><span class="chip">Postman</span><span class="chip">Swagger / OpenAPI</span><span class="chip">Linux</span></div></div>
+    </div>
+  </section>
+
+  <section id="experiencia">
+    <div class="reveal">
+      <div class="eyebrow">// experiencia</div>
+      <h2>Dónde he trabajado.</h2>
+    </div>
+    <div class="timeline">
+      <article class="job reveal">
+        <div class="job-head">
+          <div><h3>Desarrollador Junior</h3><div class="where">Gestión de Seguridad Electrónica S.A. (GSE) · Bucaramanga</div></div>
+          <div class="when">Sep 2025 – Jul 2026</div>
+        </div>
+        <ul>
+          <li>Desarrollo y mantenimiento de APIs REST con FastAPI (Python) para sistemas internos de la compañía.</li>
+          <li>Herramientas de escritorio con Tkinter para apoyar procesos internos y soporte técnico.</li>
+          <li>Optimización de una plataforma interna de liquidación y recaudo con Nest.js (TypeScript).</li>
+          <li>Corrección de incidencias y soporte sobre MySQL y MongoDB, con Git y Azure DevOps.</li>
+        </ul>
+      </article>
+      <article class="job reveal">
+        <div class="job-head">
+          <div><h3>Auxiliar de Desarrollo Web Backend</h3><div class="where">Universidad Industrial de Santander · Escuela de Ingeniería de Sistemas</div></div>
+          <div class="when">Feb 2024 – Ago 2024</div>
+        </div>
+        <ul>
+          <li>Apoyo al desarrollo y mantenimiento de aplicaciones web backend de la escuela.</li>
+          <li>Buenas prácticas de control de versiones con Git/GitHub.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section id="proyectos">
+    <div class="reveal">
+      <div class="eyebrow">// proyectos</div>
+      <h2>Lo que he construido.</h2>
+      <p class="lead">Repositorios públicos de práctica y aprendizaje. Los datos de lenguaje y estrellas se leen en vivo desde GitHub.</p>
+    </div>
+    <div class="filters reveal" id="filters"></div>
+    <div class="projects" id="projects"></div>
+  </section>
+
+  <section id="certificaciones">
+    <div class="reveal">
+      <div class="eyebrow">// certificaciones</div>
+      <h2>Formación complementaria.</h2>
+    </div>
+    <div class="certs reveal">
+      <div class="cert"><div class="yr">2026</div><h3>Ciberseguridad de Google</h3><p>Google Career Certificates · Coursera</p></div>
+      <div class="cert"><div class="yr">2025</div><h3>Ciberseguridad Básica</h3><p>MinTIC y Asociación Nacional para el Desarrollo Social (Andes)</p></div>
+      <div class="cert"><div class="yr">2023</div><h3>Backend</h3><p>Oracle Next Education (ONE)</p></div>
+      <div class="cert"><div class="yr">edX</div><h3>CS50x: Intro to Computer Science</h3><p>Harvard University</p></div>
+    </div>
+  </section>
+
+  <section id="contacto">
+    <div class="contact reveal">
+      <div class="eyebrow">// contacto</div>
+      <h2>¿Construimos algo juntos?</h2>
+      <p class="lead">Estoy buscando mi próximo reto como desarrollador backend. Escríbeme y conversamos.</p>
+      <div class="cta">
+        <a class="btn primary" href="mailto:diegosistemas29@hotmail.com">diegosistemas29@hotmail.com</a>
+        <a class="btn" href="https://www.linkedin.com/in/diego-medina-srneo" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="https://github.com/SrNe0" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© <span id="yr"></span> Diego Armando Medina Ortega · Bucaramanga, Colombia</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+
+  /* tema */
+  var themeBtn = document.getElementById('theme');
+  function setTheme(t){ root.setAttribute('data-theme',t); themeBtn.textContent = t==='light' ? '☀' : '☾'; try{localStorage.setItem('theme',t)}catch(e){} }
+  var saved=null; try{saved=localStorage.getItem('theme')}catch(e){}
+  setTheme(saved || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light':'dark'));
+  themeBtn.addEventListener('click',function(){ setTheme(root.getAttribute('data-theme')==='light'?'dark':'light') });
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* luz que sigue al cursor */
+  var bg=document.querySelector('.bg');
+  if(!reduce) window.addEventListener('pointermove',function(e){
+    bg.style.setProperty('--mx',e.clientX+'px'); bg.style.setProperty('--my',e.clientY+'px');
+  });
+
+  /* rol que se escribe */
+  var roles=['APIs REST con FastAPI','Backends con Nest.js','Servicios con Spring Boot','Bases de datos y seguridad'];
+  var typed=document.getElementById('typed');
+  if(reduce){ typed.textContent=roles[0]; }
+  else{
+    var ri=0,ci=0,del=false;
+    (function tick(){
+      var w=roles[ri];
+      typed.textContent = '> ' + w.slice(0,ci);
+      if(!del && ci<w.length){ci++;setTimeout(tick,70)}
+      else if(!del){del=true;setTimeout(tick,1500)}
+      else if(ci>0){ci--;setTimeout(tick,35)}
+      else{del=false;ri=(ri+1)%roles.length;setTimeout(tick,300)}
+    })();
+  }
+
+  /* terminal */
+  var lines=[
+    '<span class="c">$</span> curl -s https://srne0.dev/api/diego | jq',
+    '',
+    '{',
+    '  <span class="k">"nombre"</span>: <span class="s">"Diego Medina"</span>,',
+    '  <span class="k">"rol"</span>: <span class="s">"Backend Developer"</span>,',
+    '  <span class="k">"ubicacion"</span>: <span class="s">"Bucaramanga, CO"</span>,',
+    '  <span class="k">"estudios"</span>: <span class="s">"Ing. de Sistemas · UIS"</span>,',
+    '  <span class="k">"stack"</span>: [<span class="s">"Python"</span>, <span class="s">"TypeScript"</span>, <span class="s">"Java"</span>],',
+    '  <span class="k">"frameworks"</span>: [<span class="s">"FastAPI"</span>, <span class="s">"Nest.js"</span>, <span class="s">"Spring Boot"</span>],',
+    '  <span class="k">"db"</span>: [<span class="s">"PostgreSQL"</span>, <span class="s">"MySQL"</span>, <span class="s">"MongoDB"</span>],',
+    '  <span class="k">"open_to_work"</span>: <span class="n">true</span>',
+    '}',
+    '<span class="c">HTTP 200</span> <span class="status">OK</span>'
+  ];
+  var term=document.getElementById('term');
+  if(reduce){ term.innerHTML=lines.join('\n'); }
+  else{
+    var li=0; term.innerHTML='';
+    (function next(){
+      if(li>=lines.length) return;
+      term.innerHTML += (li?'\n':'') + lines[li]; li++;
+      setTimeout(next, li===1?700:180);
+    })();
+  }
+
+  /* contadores y reveal */
+  function count(el){
+    var to=+el.dataset.count, suf=el.dataset.suffix||'', n=0;
+    if(reduce){el.textContent=to+suf;return}
+    var step=Math.max(1,Math.ceil(to/24));
+    var t=setInterval(function(){n=Math.min(to,n+step);el.textContent=n+suf;if(n>=to)clearInterval(t)},45);
+  }
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      e.target.classList.add('in');
+      e.target.querySelectorAll('[data-count]').forEach(count);
+      io.unobserve(e.target);
+    });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+
+  /* nav activo */
+  var secs=[].slice.call(document.querySelectorAll('main section[id]'));
+  var navLinks=[].slice.call(document.querySelectorAll('.links a[href^="#"]'));
+  var so=new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting) navLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)});
+    });
+  },{rootMargin:'-45% 0px -50% 0px'});
+  secs.forEach(function(s){so.observe(s)});
+
+  /* proyectos */
+  var projects=[
+    {n:'inventory-backend',d:'API REST de control de inventario con Java, Spring Boot y PostgreSQL.',t:['Java','Spring Boot','PostgreSQL','REST'],c:'Backend'},
+    {n:'finanzas-app',d:'App de finanzas personales: deudas, gastos y fuentes de dinero en pesos colombianos. React, Fastify, Prisma y SQLite.',t:['React','Fastify','Prisma','SQLite'],c:'Full Stack'},
+    {n:'AdminPanel',d:'Panel administrativo con CRUD de clientes, proveedores y usuarios, rutas protegidas y CI.',t:['React 19','Vite','Tailwind CSS'],c:'Frontend'},
+    {n:'reservas-app',d:'Plataforma de reservas y turnos para negocios.',t:['Reservas','Turnos'],c:'Full Stack'},
+    {n:'contact_manager',d:'Gestor de contactos por consola en Python puro: arquitectura por capas, almacenamiento JSON seguro, búsqueda flexible y exportación CSV.',t:['Python','CLI','JSON','CSV'],c:'Backend'},
+    {n:'thinkpad-fan-control',d:'Monitor y controlador gráfico de la velocidad del ventilador para portátiles Lenovo ThinkPad en Linux.',t:['Linux','GUI','Hardware'],c:'Herramientas'}
+  ];
+  var cats=['Todos'].concat(projects.map(function(p){return p.c}).filter(function(v,i,a){return a.indexOf(v)===i}));
+  var fEl=document.getElementById('filters'), pEl=document.getElementById('projects');
+  fEl.innerHTML=cats.map(function(c,i){return '<button class="'+(i?'':'on')+'" data-c="'+c+'">'+c+'</button>'}).join('');
+  pEl.innerHTML=projects.map(function(p){
+    return '<a class="proj reveal" href="https://github.com/SrNe0/'+p.n+'" target="_blank" rel="noopener" data-c="'+p.c+'" data-repo="'+p.n+'">'+
+      '<div class="proj-top"><span>'+p.c+'</span><span>↗</span></div>'+
+      '<h3>'+p.n+'</h3><p>'+p.d+'</p>'+
+      '<div class="chips">'+p.t.map(function(x){return '<span class="chip">'+x+'</span>'}).join('')+'</div>'+
+      '<div class="meta"><span class="lang"></span><span class="stars"></span></div></a>';
+  }).join('');
+  [].forEach.call(pEl.children,function(el){
+    io.observe(el);
+    el.addEventListener('pointermove',function(e){var r=el.getBoundingClientRect();el.style.setProperty('--px',(e.clientX-r.left)+'px');el.style.setProperty('--py',(e.clientY-r.top)+'px')});
+  });
+  fEl.addEventListener('click',function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    [].forEach.call(fEl.children,function(x){x.classList.toggle('on',x===b)});
+    [].forEach.call(pEl.children,function(el){el.classList.toggle('hide',b.dataset.c!=='Todos'&&el.dataset.c!==b.dataset.c)});
+  });
+
+  /* datos en vivo de GitHub (si falla, simplemente no se muestran) */
+  projects.forEach(function(p){
+    fetch('https://api.github.com/repos/SrNe0/'+p.n).then(function(r){return r.ok?r.json():null}).then(function(d){
+      if(!d) return;
+      var el=pEl.querySelector('[data-repo="'+p.n+'"]');
+      if(d.language) el.querySelector('.lang').textContent='● '+d.language;
+      el.querySelector('.stars').textContent='★ '+d.stargazers_count;
+    }).catch(function(){});
+  });
+})();
+</script>
+</body>
+</html>
