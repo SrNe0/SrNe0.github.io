@@ -138,6 +138,12 @@ h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.03em;margin:8px 0 14px;line-h
 .proj .chips{margin-top:18px}
 .proj .meta{display:flex;gap:14px;margin-top:16px;font-size:12.5px;color:var(--muted);font-family:"JetBrains Mono",monospace}
 .proj.hide{display:none}
+/* Toda la tarjeta lleva al repo (enlace del título extendido); el enlace a la demo queda por encima */
+.proj>h3{position:static}
+.proj h3 a::after{content:"";position:absolute;inset:0;z-index:1}
+.proj .links{margin-top:16px;z-index:2}
+.proj .demo{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 50%,var(--line));color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);transition:.2s}
+.proj .demo:hover{background:var(--accent);color:#04120b}
 
 /* certificaciones */
 .certs{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:36px}
@@ -389,8 +395,8 @@ footer{padding:36px 0 50px;text-align:center;color:var(--muted);font-size:13px}
   /* proyectos */
   var projects=[
     {n:'inventory-backend',d:'API REST de control de inventario con Java, Spring Boot y PostgreSQL.',t:['Java','Spring Boot','PostgreSQL','REST'],c:'Backend'},
-    {n:'finanzas-app',d:'App de finanzas personales: deudas, gastos y fuentes de dinero en pesos colombianos. React, Fastify, Prisma y SQLite.',t:['React','Fastify','Prisma','SQLite'],c:'Full Stack'},
-    {n:'AdminPanel',d:'Panel administrativo con CRUD de clientes, proveedores y usuarios, rutas protegidas y CI.',t:['React 19','Vite','Tailwind CSS'],c:'Frontend'},
+    {n:'finanzas-app',d:'App de finanzas personales: deudas, gastos y fuentes de dinero en pesos colombianos. React, Fastify, Prisma y SQLite.',t:['React','Fastify','Prisma','SQLite'],c:'Full Stack',demo:'https://finanzas-demo.srne0.dev'},
+    {n:'AdminPanel',d:'Panel administrativo con CRUD de clientes, proveedores y usuarios, rutas protegidas y CI.',t:['React 19','Vite','Tailwind CSS'],c:'Frontend',demo:'https://admin.srne0.dev'},
     {n:'reservas-app',d:'Plataforma de reservas y turnos para negocios.',t:['Reservas','Turnos'],c:'Full Stack'},
     {n:'contact_manager',d:'Gestor de contactos por consola en Python puro: arquitectura por capas, almacenamiento JSON seguro, búsqueda flexible y exportación CSV.',t:['Python','CLI','JSON','CSV'],c:'Backend'},
     {n:'thinkpad-fan-control',d:'Monitor y controlador gráfico de la velocidad del ventilador para portátiles Lenovo ThinkPad en Linux.',t:['Linux','GUI','Hardware'],c:'Herramientas'}
@@ -399,11 +405,12 @@ footer{padding:36px 0 50px;text-align:center;color:var(--muted);font-size:13px}
   var fEl=document.getElementById('filters'), pEl=document.getElementById('projects');
   fEl.innerHTML=cats.map(function(c,i){return '<button class="'+(i?'':'on')+'" data-c="'+c+'">'+c+'</button>'}).join('');
   pEl.innerHTML=projects.map(function(p){
-    return '<a class="proj reveal" href="https://github.com/SrNe0/'+p.n+'" target="_blank" rel="noopener" data-c="'+p.c+'" data-repo="'+p.n+'">'+
+    return '<article class="proj reveal" data-c="'+p.c+'" data-repo="'+p.n+'">'+
       '<div class="proj-top"><span>'+p.c+'</span><span>↗</span></div>'+
-      '<h3>'+p.n+'</h3><p>'+p.d+'</p>'+
+      '<h3><a href="https://github.com/SrNe0/'+p.n+'" target="_blank" rel="noopener">'+p.n+'</a></h3><p>'+p.d+'</p>'+
       '<div class="chips">'+p.t.map(function(x){return '<span class="chip">'+x+'</span>'}).join('')+'</div>'+
-      '<div class="meta"><span class="lang"></span><span class="stars"></span></div></a>';
+      (p.demo?'<div class="links"><a class="demo" href="'+p.demo+'" target="_blank" rel="noopener">● Demo en vivo ↗</a></div>':'')+
+      '<div class="meta"><span class="lang"></span><span class="stars"></span></div></article>';
   }).join('');
   [].forEach.call(pEl.children,function(el){
     io.observe(el);
