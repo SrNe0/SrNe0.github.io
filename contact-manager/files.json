@@ -1,0 +1,21 @@
+[
+  "app/__init__.py",
+  "app/configs/__init__.py",
+  "app/configs/settings.py",
+  "app/db/__init__.py",
+  "app/db/csv_export.py",
+  "app/db/json_store.py",
+  "app/helpers/__init__.py",
+  "app/helpers/formatters.py",
+  "app/interface/__init__.py",
+  "app/interface/contact_flows.py",
+  "app/interface/menu.py",
+  "app/main.py",
+  "app/models/__init__.py",
+  "app/models/contact.py",
+  "app/services/__init__.py",
+  "app/services/contacts_service.py",
+  "app/utils/__init__.py",
+  "app/utils/console.py",
+  "app/utils/validators.py"
+]

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact Manager · Demo interactiva</title>
+<meta name="description" content="Demo interactiva de Contact Manager, un CLI en Python puro. El programa real corre en tu navegador con Pyodide.">
+<meta name="theme-color" content="#0a0e14">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230a0e14'/><text x='32' y='43' font-family='monospace' font-size='30' font-weight='700' text-anchor='middle' fill='%233ddc97'>&gt;_</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css">
+<style>
+:root{--bg:#0a0e14;--bg2:#0f1520;--card:#121a27;--line:#1f2a3b;--text:#e6edf6;--muted:#8a97ab;--accent:#3ddc97;--accent2:#8b7bff;--radius:16px}
+:root[data-theme="light"]{--bg:#f6f8fb;--bg2:#eef2f7;--card:#ffffff;--line:#dde4ee;--text:#0f1722;--muted:#5b6778;--accent:#0b9d68;--accent2:#5b4bdb}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(960px,100% - 32px);margin-inline:auto}
+.top{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.back{color:var(--muted);font-size:14px;transition:.2s}.back:hover{color:var(--accent)}
+.eyebrow{font-family:"JetBrains Mono",monospace;color:var(--accent);font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:clamp(28px,4.5vw,40px);letter-spacing:-.03em;line-height:1.15;margin:8px 0 12px}
+.lead{color:var(--muted);max-width:680px}
+.lead b{color:var(--text);font-weight:600}
+.panel{margin-top:28px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#0a0e14;box-shadow:0 30px 80px -30px #000a}
+.bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #1f2a3b;background:#0f1520;flex-wrap:wrap}
+.bar i{width:11px;height:11px;border-radius:50%;display:block}
+.bar i:nth-child(1){background:#ff5f57}.bar i:nth-child(2){background:#febc2e}.bar i:nth-child(3){background:#28c840}
+.bar .title{margin-left:8px;font:12px "JetBrains Mono",monospace;color:#8a97ab;flex:1;min-width:120px}
+.btn{font:600 12.5px Inter,sans-serif;color:#e6edf6;background:#121a27;border:1px solid #1f2a3b;border-radius:8px;padding:5px 11px;cursor:pointer;transition:.2s}
+.btn:hover:not(:disabled){border-color:#3ddc97;color:#3ddc97}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+#term{height:min(62vh,520px);min-height:380px;padding:10px 6px 6px 12px}
+.xterm-viewport{background:transparent!important}
+.status{padding:8px 14px;border-top:1px solid #1f2a3b;background:#0f1520;font:12px "JetBrains Mono",monospace;color:#8a97ab;display:flex;gap:10px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:#febc2e;flex:none}
+.dot.ok{background:#3ddc97}.dot.err{background:#ff5f57}
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:26px 0 60px}
+.tip{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:18px}
+.tip h2{font-size:15px;margin-bottom:6px}
+.tip p{font-size:14px;color:var(--muted)}
+.tip code{font-family:"JetBrains Mono",monospace;font-size:12.5px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;color:var(--text)}
+footer{padding:0 0 40px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="back" href="/">← Portafolio</a>
+    <a class="back" href="https://github.com/SrNe0/contact_manager" target="_blank" rel="noopener">Ver código en GitHub ↗</a>
+  </div>
+
+  <div class="eyebrow">// demo interactiva</div>
+  <h1>Contact Manager</h1>
+  <p class="lead">Gestor de contactos para la terminal, en <b>Python puro</b>. Lo que ves abajo es el <b>programa real del repositorio</b>, ejecutándose en tu navegador con Pyodide. No se envía nada a ningún servidor: tus contactos viven en la memoria de esta pestaña y se borran al recargar.</p>
+
+  <div class="panel">
+    <div class="bar">
+      <i></i><i></i><i></i>
+      <span class="title">python -m app.main</span>
+      <button class="btn" id="restart" disabled>Reiniciar</button>
+      <button class="btn" id="csv" disabled title="Disponible después de exportar (opción 6)">Descargar CSV</button>
+    </div>
+    <div id="term" aria-label="Terminal interactiva"></div>
+    <div class="status"><span class="dot" id="dot"></span><span id="status">Cargando Python (unos 10 MB la primera vez)…</span></div>
+  </div>
+
+  <div class="tips">
+    <div class="tip"><h2>Pruébalo</h2><p>Escribe <code>1</code> y Enter para añadir un contacto. Prueba un correo inválido y un teléfono repetido para ver las validaciones.</p></div>
+    <div class="tip"><h2>Búsqueda y edición</h2><p>La opción <code>3</code> busca por parte del nombre, teléfono o correo. Al editar, escribe <code>-</code> para borrar un campo.</p></div>
+    <div class="tip"><h2>Exportar</h2><p>La opción <code>6</code> genera el CSV y se activa el botón <b>Descargar CSV</b> de arriba.</p></div>
+  </div>
+  <footer>Hecho con <a href="https://pyodide.org" target="_blank" rel="noopener" style="color:var(--accent)">Pyodide</a> y <a href="https://xtermjs.org" target="_blank" rel="noopener" style="color:var(--accent)">xterm.js</a>. En el móvil, toca la terminal para abrir el teclado.</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+<script>
+(function(){
+  // Mismo tema que el portafolio (comparten origen y localStorage)
+  try{ var t=localStorage.getItem('theme'); if(t) document.documentElement.setAttribute('data-theme',t); }catch(e){}
+
+  var $=function(id){return document.getElementById(id)};
+  var statusEl=$('status'), dot=$('dot'), restartBtn=$('restart'), csvBtn=$('csv');
+  function setStatus(msg,kind){ statusEl.textContent=msg; dot.className='dot'+(kind?' '+kind:''); }
+
+  var term=new Terminal({
+    // El programa dibuja líneas de 50 columnas: en pantallas estrechas se reduce la letra para que no se partan
+    cursorBlink:true, convertEol:true, fontSize:Math.max(9,Math.min(14,Math.floor((window.innerWidth-60)/50/0.6))), scrollback:2000,
+    fontFamily:'"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace',
+    theme:{background:'#0a0e14',foreground:'#e6edf6',cursor:'#3ddc97',selectionBackground:'#27405c'}
+  });
+  var fit=new FitAddon.FitAddon(); term.loadAddon(fit);
+  term.open($('term')); fit.fit();
+  window.addEventListener('resize',function(){ try{fit.fit()}catch(e){} });
+  $('term').addEventListener('click',function(){ term.focus() });
+  term.write('\x1b[90mCargando Python en tu navegador…\x1b[0m\r\n');
+
+  var py=null, run=null, csvFn=null;
+  var inputs=[], prevOut='', line='', busy=true, done=false;
+
+  function advance(nuevaLinea){
+    busy=true;
+    if(nuevaLinea!==undefined) inputs.push(nuevaLinea);
+    var proxyIn=py.toPy(inputs), res=run(proxyIn), pair=res.toJs();
+    proxyIn.destroy(); res.destroy();
+    var out=pair[0], status=pair[1];
+
+    if(out.indexOf(prevOut)===0){
+      // Solo lo nuevo: se salta el eco de la línea que el usuario ya vio mientras escribía
+      var skip = nuevaLinea!==undefined ? nuevaLinea.length+1 : 0;
+      term.write(out.slice(prevOut.length+skip));
+    }else{
+      term.reset(); term.write(out);   // por seguridad, si la sesión no coincidiera
+    }
+    prevOut=out;
+    line='';
+    done=(status==='done');
+    busy=false;
+    csvBtn.disabled = csvFn()==null;
+    if(done){
+      setStatus('El programa terminó. Pulsa “Reiniciar” para empezar de nuevo.','');
+    }else{
+      setStatus('Listo: escribe en la terminal y pulsa Enter.','ok');
+    }
+  }
+
+  term.onData(function(d){
+    if(busy||done) return;
+    if(d.charAt(0)==='\x1b') return;               // flechas y otras teclas especiales
+    for(var i=0;i<d.length;i++){
+      var c=d.charAt(i);
+      if(c==='\r'||c==='\n'){
+        term.write('\r\n');
+        var l=line;
+        try{ advance(l); }catch(err){ console.error(err); setStatus('Error: '+err.message,'err'); }
+        return;
+      }
+      if(c==='\x7f'||c==='\b'){
+        if(line.length){ line=line.slice(0,-1); term.write('\b \b'); }
+        continue;
+      }
+      if(c>=' '){ line+=c; term.write(c); }
+    }
+  });
+
+  function restart(){
+    term.reset(); inputs=[]; prevOut=''; line=''; done=false;
+    advance();
+    term.focus();
+  }
+  restartBtn.addEventListener('click',restart);
+
+  csvBtn.addEventListener('click',function(){
+    var texto=csvFn(); if(texto==null) return;
+    var blob=new Blob(['﻿'+texto],{type:'text/csv;charset=utf-8'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='contacts_export.csv';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(function(){URL.revokeObjectURL(a.href)},1000);
+  });
+
+  async function boot(){
+    try{
+      py=await loadPyodide();
+      setStatus('Cargando el programa…');
+      var files=await (await fetch('files.json')).json();
+      var dirs={};
+      for(var i=0;i<files.length;i++){
+        var f=files[i], dir=f.substring(0,f.lastIndexOf('/'));
+        if(!dirs[dir]){ py.FS.mkdirTree('/home/pyodide/'+dir); dirs[dir]=1; }
+        var src=await (await fetch(f)).text();
+        py.FS.writeFile('/home/pyodide/'+f, src);
+      }
+      py.runPython(await (await fetch('runner.py')).text());
+      run=py.globals.get('run'); csvFn=py.globals.get('csv_exportado');
+      restartBtn.disabled=false;
+      term.reset();
+      advance();
+      term.focus();
+    }catch(err){
+      console.error(err);
+      setStatus('No se pudo cargar la demo: '+err.message,'err');
+      term.write('\r\n\x1b[31mNo se pudo cargar la demo.\x1b[0m\r\n');
+    }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
